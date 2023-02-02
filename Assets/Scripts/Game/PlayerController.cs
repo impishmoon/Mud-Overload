@@ -23,7 +23,6 @@ namespace MudOverload.Game
 
             if (floorTile && Input.GetKeyDown(KeyCode.Space))
             {
-                jumpedOnFloor = true;
                 jump = true;
             }
 
