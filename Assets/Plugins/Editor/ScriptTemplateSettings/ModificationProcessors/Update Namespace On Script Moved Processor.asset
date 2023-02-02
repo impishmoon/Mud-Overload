@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 806808315, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: Update Namespace On Script Moved Processor
+  m_EditorClassIdentifier: 
+  _isActive: 1
+  _order: 0
+  namespaceKeyword: {fileID: 114364570387524256, guid: f273121041a24614383c85927c8621a2,
+    type: 2}

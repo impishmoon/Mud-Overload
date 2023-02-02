@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -416255796, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: Targeted Type Processor
+  m_EditorClassIdentifier: 
+  _isActive: 1
+  _order: 0
+  _targetedTypeKeyword: TARGETED_TYPE
+  _usingTargetedTypeKeyword: USING_TARGETED_TYPE
+  _startNamespaceTypeKeyword: START_NAMESPACE_TARGETED_TYPE
+  _endNamespaceTypeKeyword: END_NAMESPACE_TARGETED_TYPE
+  _indentSize: 4

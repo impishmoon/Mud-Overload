@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 662435634, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: ScriptTemplateSettings
+  m_EditorClassIdentifier: 
+  allKeywords:
+  - {fileID: 114006841538007530}
+  - {fileID: 114613935506991482}
+  - {fileID: 114380126654612652}
+  - {fileID: 114364570387524256}
+  - {fileID: 114141027725322898}
+  processedFiles:
+  - .cs
+  - .js
+  - .boo
+  - .shader
+  - .compute
+  _renameNamespaceOnScriptMove: 0
+  _renameTypeOnScriptRenamed: 0
+  _namespaceRenamer: {fileID: 0}
+--- !u!114 &114006841538007530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1532399481, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: DATE
+  m_EditorClassIdentifier: 
+  dateFormat: dd/MM/yyyy HH:mm
+--- !u!114 &114141027725322898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1372803794, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: PRODUCT
+  m_EditorClassIdentifier: 
+--- !u!114 &114364570387524256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1175856594, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: RELATIVE_NAMESPACE
+  m_EditorClassIdentifier: 
+  globalFilters: []
+  folderFilters:
+  - pattern: ^scripts?|codes?$
+    mode: 4
+    regexOptions: 1
+    caseSensitive: 1
+  - pattern: ^Assets|Editor|Resources|Plugins$
+    mode: 4
+    regexOptions: 0
+    caseSensitive: 1
+  prefixWithEditorRootNamespace: 1
+--- !u!114 &114380126654612652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1316593322, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: NAMESPACE
+  m_EditorClassIdentifier: 
+--- !u!114 &114613935506991482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1031795886, guid: bc296e1e6a372a0409fcd8738f841977, type: 3}
+  m_Name: DEVELOPER_NAME
+  m_EditorClassIdentifier: 
