@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MudOverload.Game.Player
 {
@@ -21,7 +22,7 @@ namespace MudOverload.Game.Player
         }
 
         [SerializeField]
-        private LayerMask everythingExceptPlayerMask;
+        private LayerMask onlyTiles;
 
         [SerializeField]
         private float speed;
@@ -95,8 +96,8 @@ namespace MudOverload.Game.Player
 
             var mousePosition = CameraController.GetCamera().ScreenToWorldPoint(Input.mousePosition);
 
-            var miningHit = Physics2D.Raycast(miningSource, mousePosition - miningSource, 3f, everythingExceptPlayerMask);
-            if (miningHit.collider && !PrizeController.GetIsHovering())
+            var miningHit = Physics2D.Raycast(miningSource, mousePosition - miningSource, 3f, onlyTiles);
+            if (miningHit.collider && !PrizeController.GetIsHovering() && SceneManager.GetActiveScene().buildIndex == 0)
             {
                 var finalMiningHitPoint = miningHit.point + miningHit.normal * -0.1f;
 
@@ -150,19 +151,19 @@ namespace MudOverload.Game.Player
         private void FixedUpdate()
         {
             //detecting if we are touching the ground
-            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.5f, everythingExceptPlayerMask);
+            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.5f, onlyTiles);
             onGround = floorHit.collider;
 
             if (onGround && isWalking)
             {
                 //detecting if we should auto-step over tile
 
-                var topHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, everythingExceptPlayerMask);
-                var bottomHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, everythingExceptPlayerMask);
+                var topHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, onlyTiles);
+                var bottomHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, onlyTiles);
 
                 if (!topHit.collider && bottomHit.collider)
                 {
-                    var heightCheck = Physics2D.Raycast(rigidbody.position + new Vector2(walkingRight ? 1f : -1f, 0.75f), Vector2.up, 1f, everythingExceptPlayerMask);
+                    var heightCheck = Physics2D.Raycast(rigidbody.position + new Vector2(walkingRight ? 1f : -1f, 0.75f), Vector2.up, 1f, onlyTiles);
                     if (!heightCheck.collider)
                     {
                         rigidbody.position += new Vector2(walkingRight ? 0.35f : -0.35f, 1f);
@@ -173,8 +174,8 @@ namespace MudOverload.Game.Player
 
         private bool IsBlockedBySide(bool right)
         {
-            var top = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.75f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
-            var bottom = Physics2D.Raycast(rigidbody.position - new Vector2(0, 0.975f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
+            var top = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.75f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, onlyTiles);
+            var bottom = Physics2D.Raycast(rigidbody.position - new Vector2(0, 0.975f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, onlyTiles);
 
             return top.collider || bottom.collider;
         }

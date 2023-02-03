@@ -1,7 +1,6 @@
 using UnityEngine;
 
-namespace MudOverload.Game.Boos
-{
+namespace MudOverload.Game.Boss {
 	public class TransformKeeper : MonoBehaviour
 	{
         private Vector3 position;
