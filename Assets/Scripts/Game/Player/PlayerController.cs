@@ -1,6 +1,7 @@
 using UnityEngine;
 
-namespace MudOverload.Game.Player {
+namespace MudOverload.Game.Player
+{
     public class PlayerController : MonoBehaviour
     {
         private static PlayerController Singleton;
@@ -68,8 +69,7 @@ namespace MudOverload.Game.Player {
             {
                 if (Input.GetKey(KeyCode.A))
                 {
-                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
-                    if (!hit.collider)
+                    if (!IsBlockedBySide(false))
                     {
                         horizontalVelocity += -speed;
                         walkingRight = false;
@@ -77,8 +77,7 @@ namespace MudOverload.Game.Player {
                 }
                 if (Input.GetKey(KeyCode.D))
                 {
-                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.right, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
-                    if (!hit.collider)
+                    if (!IsBlockedBySide(true))
                     {
                         horizontalVelocity += speed;
                         walkingRight = true;
@@ -97,7 +96,7 @@ namespace MudOverload.Game.Player {
             var mousePosition = CameraController.GetCamera().ScreenToWorldPoint(Input.mousePosition);
 
             var miningHit = Physics2D.Raycast(miningSource, mousePosition - miningSource, 3f, everythingExceptPlayerMask);
-            if (miningHit.collider)
+            if (miningHit.collider && !PrizeController.GetIsHovering())
             {
                 var finalMiningHitPoint = miningHit.point + miningHit.normal * -0.1f;
 
@@ -136,30 +135,48 @@ namespace MudOverload.Game.Player {
                 MiningPreviewController.Hide();
             }
             #endregion
+
+            #region Clearing held tiles onto trash portal
+            var portalRegion = TrashPortalController.GetPortalLocation();
+            var distance = Vector2.Distance(rigidbody.position, portalRegion);
+            if (distance < 3)
+            {
+                heldTiles = 0;
+                PlayerHoldingTilesController.ClearTiles();
+            }
+            #endregion
         }
 
         private void FixedUpdate()
         {
             //detecting if we are touching the ground
-            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.015f, everythingExceptPlayerMask);
+            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.5f, everythingExceptPlayerMask);
             onGround = floorHit.collider;
 
             if (onGround && isWalking)
             {
                 //detecting if we should auto-step over tile
-                var sideHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.25f), walkingRight ? Vector2.right : Vector2.left, 5f, everythingExceptPlayerMask);
-                if (sideHit.collider && sideHit.distance < 0.6f)
-                {
-                    var source = rigidbody.position + new Vector2(walkingRight ? 0.6f : -0.6f, 0.25f);
-                    var upHit = Physics2D.Raycast(source, Vector2.up, 1f, everythingExceptPlayerMask);
-                    var downHit = Physics2D.Raycast(source, Vector2.down, 5f, everythingExceptPlayerMask);
 
-                    if (!upHit.collider && downHit.collider && downHit.distance > 0 && downHit.distance < 0.27f)
+                var topHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, everythingExceptPlayerMask);
+                var bottomHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.5f), walkingRight ? Vector2.right : Vector2.left, 1f, everythingExceptPlayerMask);
+
+                if (!topHit.collider && bottomHit.collider)
+                {
+                    var heightCheck = Physics2D.Raycast(rigidbody.position + new Vector2(walkingRight ? 1f : -1f, 0.75f), Vector2.up, 1f, everythingExceptPlayerMask);
+                    if (!heightCheck.collider)
                     {
-                        rigidbody.position += new Vector2(walkingRight ? 0.25f : -0.25f, 1f);
+                        rigidbody.position += new Vector2(walkingRight ? 0.35f : -0.35f, 1f);
                     }
                 }
             }
+        }
+
+        private bool IsBlockedBySide(bool right)
+        {
+            var top = Physics2D.Raycast(rigidbody.position + new Vector2(0, 0.75f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
+            var bottom = Physics2D.Raycast(rigidbody.position - new Vector2(0, 0.975f), right ? Vector2.right : Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
+
+            return top.collider || bottom.collider;
         }
 
         private void StopMining()

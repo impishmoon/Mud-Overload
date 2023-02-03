@@ -15,6 +15,7 @@ namespace MudOverload.Game.Player
             newTile.transform.localPosition = new Vector3(Random.Range(-randomPositionSize, randomPositionSize), Random.Range(-randomPositionSize, randomPositionSize), Random.Range(-randomPositionSize, randomPositionSize));
             newTile.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
             newTile.sprite = sprite;
+            newTile.gameObject.SetActive(true);
         }
 
         public static void ClearTiles()
@@ -38,6 +39,8 @@ namespace MudOverload.Game.Player
         private void Awake()
         {
             Singleton = this;
+
+            template.gameObject.SetActive(false);
         }
     }
 }

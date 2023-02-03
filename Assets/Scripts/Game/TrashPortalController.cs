@@ -7,6 +7,13 @@ namespace MudOverload.Game
 	{
 		private static TrashPortalController Singleton;
 
+        public static Vector2 GetPortalLocation()
+        {
+            if (Singleton == null) return Vector2.zero;
+
+            return Singleton.transform.position;
+        }
+
         private new SpriteRenderer renderer;
 
         private void Awake()
