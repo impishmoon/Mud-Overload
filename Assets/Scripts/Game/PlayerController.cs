@@ -4,6 +4,15 @@ namespace MudOverload.Game
 {
     public class PlayerController : MonoBehaviour
     {
+        private static PlayerController Singleton;
+
+        public static Vector2 GetMiningEffectTargetPosition()
+        {
+            if (Singleton == null) return new Vector2();
+
+            return Singleton.rigidbody.position;
+        }
+
         [SerializeField]
         private LayerMask everythingExceptPlayerMask;
 
@@ -23,6 +32,8 @@ namespace MudOverload.Game
 
         private void Awake()
         {
+            Singleton = this;
+
             rigidbody = GetComponent<Rigidbody2D>();
         }
 
