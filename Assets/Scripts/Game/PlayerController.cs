@@ -2,19 +2,24 @@ using UnityEngine;
 
 namespace MudOverload.Game
 {
-	public class PlayerController : MonoBehaviour
-	{
+    public class PlayerController : MonoBehaviour
+    {
         [SerializeField]
         private LayerMask everythingExceptPlayerMask;
 
         [SerializeField]
         private float speed;
-        
-		private new Rigidbody2D rigidbody;
+
+        [SerializeField]
+        private float miningSpeed = 1f;
+
+        private new Rigidbody2D rigidbody;
 
         private bool onGround = false;
-
         private bool walkingRight = false;
+
+        private float miningStart = 0f;
+        private Vector2 miningPosition;
 
         private void Awake()
         {
@@ -23,6 +28,7 @@ namespace MudOverload.Game
 
         private void Update()
         {
+            #region Movement
             float horizontalVelocity = 0;
             bool jump = false;
 
@@ -31,46 +37,116 @@ namespace MudOverload.Game
                 jump = true;
             }
 
-            if (Input.GetKey(KeyCode.A))
+            if (!IsMining())
             {
-                horizontalVelocity += -speed;
-                walkingRight = false;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                horizontalVelocity += speed;
-                walkingRight = true;
+                if (Input.GetKey(KeyCode.A))
+                {
+                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.left, 0.55f, everythingExceptPlayerMask);
+                    if (!hit.collider)
+                    {
+                        horizontalVelocity += -speed;
+                        walkingRight = false;
+                    }
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.right, 0.55f, everythingExceptPlayerMask);
+                    if (!hit.collider)
+                    {
+                        horizontalVelocity += speed;
+                        walkingRight = true;
+                    }
+                }
             }
 
             rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? speed * Time.fixedDeltaTime : rigidbody.velocity.y);
+            #endregion
 
+            #region Mining
+            var miningSource = (Vector3)rigidbody.position + new Vector3(0, 0.5f);
+
+            var mousePosition = CameraController.GetCamera().ScreenToWorldPoint(Input.mousePosition);
+
+            var miningHit = Physics2D.Raycast(miningSource, mousePosition - miningSource, 3f, everythingExceptPlayerMask);
+            if (miningHit.collider)
+            {
+                var finalMiningHitPoint = miningHit.point + miningHit.normal * -0.1f;
+
+                MiningPreviewController.SetPosition(IsMining() ? miningPosition : finalMiningHitPoint);
+
+                if (Input.GetMouseButton(0) && !IsMining())
+                {
+                    miningStart = Time.time;
+
+                    miningPosition = finalMiningHitPoint;
+
+                    MiningController.StartMining(miningPosition);
+                }
+                if (Input.GetMouseButtonUp(0))
+                {
+                    StopMining();
+                }
+
+                if (IsMining())
+                {
+                    var progress = GetMiningProgress();
+
+                    MiningController.SetProgress(progress);
+
+                    if (progress >= 1)
+                    {
+                        StopMining();
+                        TerrainController.MineTile(miningPosition);
+                    }
+                }
+            }
+            else
+            {
+                StopMining();
+                MiningPreviewController.Hide();
+            }
+            #endregion
         }
 
         private void FixedUpdate()
         {
             //detecting if we are touching the ground
-            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 5f, everythingExceptPlayerMask);
-            onGround = floorHit.distance <= 1.015f;
+            var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.015f, everythingExceptPlayerMask);
+            onGround = floorHit.collider;
 
-            //detecting if we should auto-step over tile
-            var sideHit = Physics2D.Raycast(rigidbody.position + new Vector2(0,-0.25f), walkingRight ? Vector2.right : Vector2.left, 5f, everythingExceptPlayerMask);
-            Debug.DrawLine(rigidbody.position + new Vector2(0, -0.25f), sideHit.point, Color.red);
-            if(sideHit.distance < 0.6f)
+            if (onGround)
             {
-                var source = rigidbody.position + new Vector2(walkingRight ? 0.6f : -0.6f, 0.25f);
-                var downHit = Physics2D.Raycast(source, Vector2.down, 5f, everythingExceptPlayerMask);
-                Debug.DrawLine(source, downHit.point, Color.blue);
-                print(downHit.distance);
-
-                if(downHit.distance < 0.27f)
+                //detecting if we should auto-step over tile
+                var sideHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.25f), walkingRight ? Vector2.right : Vector2.left, 5f, everythingExceptPlayerMask);
+                if (sideHit.collider && sideHit.distance < 0.6f)
                 {
-                    rigidbody.position += new Vector2(0, 0.5f);
+                    var source = rigidbody.position + new Vector2(walkingRight ? 0.6f : -0.6f, 0.25f);
+                    var upHit = Physics2D.Raycast(source, Vector2.up, 1f, everythingExceptPlayerMask);
+                    var downHit = Physics2D.Raycast(source, Vector2.down, 5f, everythingExceptPlayerMask);
+
+                    if (!upHit.collider && downHit.collider && downHit.distance > 0 && downHit.distance < 0.27f)
+                    {
+                        rigidbody.position += new Vector2(walkingRight ? 0.25f : -0.25f, 1f);
+                    }
                 }
             }
-            /*if (hit)
-            {
-                Debug.DrawLine(rigidbody.position, hit.point);
-            }*/
+        }
+
+        private void StopMining()
+        {
+            miningStart = 0f;
+
+            MiningController.StopMining();
+        }
+
+        private bool IsMining()
+        {
+            return miningStart != 0f;
+        }
+
+        private float GetMiningProgress()
+        {
+            return (Time.time - miningStart) / miningSpeed;
         }
     }
 }

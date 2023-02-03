@@ -7,11 +7,18 @@ namespace MudOverload.Game
 	{
 		private static TerrainController Singleton;
 
-        public static TileBase getTile(Vector2 position)
+        public static TileBase GetTile(Vector2 position)
         {
             if (Singleton == null) return null;
 
             return Singleton.tilemap.GetTile(Singleton.tilemap.WorldToCell(position));
+        }
+
+        public static void MineTile(Vector2 position)
+        {
+            if (Singleton == null) return;
+
+            Singleton.tilemap.SetTile(Singleton.tilemap.WorldToCell(position), null);
         }
 
         [HideInInspector]
