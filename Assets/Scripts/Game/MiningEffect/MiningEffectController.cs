@@ -1,3 +1,4 @@
+using MudOverload.Game.Player;
 using UnityEngine;
 
 namespace MudOverload.Game.MiningEffect
@@ -42,6 +43,7 @@ namespace MudOverload.Game.MiningEffect
 
 			if(progress >= 1)
             {
+				PlayerHoldingTilesController.AddTile(renderer.sprite);
 				Destroy(gameObject);
             }
         }

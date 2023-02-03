@@ -16,7 +16,7 @@ namespace MudOverload.Game
             if (Singleton == null) return;
 
             Singleton.transform.position = GetMiningPosition(position);
-            Singleton.renderer.color = Color.white;
+            Singleton.renderer.color = new Color(1,1,1, 0.02745098f);
         }
 
         public static void Hide()

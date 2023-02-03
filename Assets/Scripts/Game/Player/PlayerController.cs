@@ -1,7 +1,6 @@
 using UnityEngine;
 
-namespace MudOverload.Game
-{
+namespace MudOverload.Game.Player {
     public class PlayerController : MonoBehaviour
     {
         private static PlayerController Singleton;
@@ -13,22 +12,39 @@ namespace MudOverload.Game
             return Singleton.rigidbody.position;
         }
 
+        public static Vector2 GetPosition()
+        {
+            if (Singleton == null) return new Vector2();
+
+            return Singleton.rigidbody.position;
+        }
+
         [SerializeField]
         private LayerMask everythingExceptPlayerMask;
 
         [SerializeField]
         private float speed;
+        [SerializeField]
+        private float jumpingForce;
+        [Header("this needs to be the same as X of collider's size")]
+        [SerializeField]
+        private float playerWidth = 1;
 
         [SerializeField]
         private float miningSpeed = 1f;
+
+        [SerializeField]
+        private int maxHeldTiles = 1;
 
         private new Rigidbody2D rigidbody;
 
         private bool onGround = false;
         private bool walkingRight = false;
+        private bool isWalking = false;
 
         private float miningStart = 0f;
         private Vector2 miningPosition;
+        private int heldTiles = 0;
 
         private void Awake()
         {
@@ -52,7 +68,7 @@ namespace MudOverload.Game
             {
                 if (Input.GetKey(KeyCode.A))
                 {
-                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.left, 0.55f, everythingExceptPlayerMask);
+                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.left, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
                     if (!hit.collider)
                     {
                         horizontalVelocity += -speed;
@@ -61,7 +77,7 @@ namespace MudOverload.Game
                 }
                 if (Input.GetKey(KeyCode.D))
                 {
-                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.right, 0.55f, everythingExceptPlayerMask);
+                    var hit = Physics2D.Raycast(rigidbody.position, Vector2.right, playerWidth / 2 + 0.025f, everythingExceptPlayerMask);
                     if (!hit.collider)
                     {
                         horizontalVelocity += speed;
@@ -70,7 +86,9 @@ namespace MudOverload.Game
                 }
             }
 
-            rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? speed * Time.fixedDeltaTime : rigidbody.velocity.y);
+            isWalking = horizontalVelocity != 0;
+
+            rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
             #endregion
 
             #region Mining
@@ -85,7 +103,7 @@ namespace MudOverload.Game
 
                 MiningPreviewController.SetPosition(IsMining() ? miningPosition : finalMiningHitPoint);
 
-                if (Input.GetMouseButton(0) && !IsMining())
+                if (Input.GetMouseButton(0) && !IsMining() && heldTiles < maxHeldTiles)
                 {
                     miningStart = Time.time;
 
@@ -108,6 +126,7 @@ namespace MudOverload.Game
                     {
                         StopMining();
                         TerrainController.MineTile(miningPosition);
+                        heldTiles++;
                     }
                 }
             }
@@ -125,7 +144,7 @@ namespace MudOverload.Game
             var floorHit = Physics2D.Raycast(rigidbody.position, Vector2.down, 1.015f, everythingExceptPlayerMask);
             onGround = floorHit.collider;
 
-            if (onGround)
+            if (onGround && isWalking)
             {
                 //detecting if we should auto-step over tile
                 var sideHit = Physics2D.Raycast(rigidbody.position + new Vector2(0, -0.25f), walkingRight ? Vector2.right : Vector2.left, 5f, everythingExceptPlayerMask);
