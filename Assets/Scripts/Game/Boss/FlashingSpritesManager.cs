@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace MudOverload.Game.Boss
 {
-	public class FlashingSpritesManager : MonoBehaviour
-	{
+    public class FlashingSpritesManager : MonoBehaviour
+    {
         [SerializeField]
         private SpriteRedFlasher leftShoulder;
         [SerializeField]
@@ -27,6 +27,33 @@ namespace MudOverload.Game.Boss
         [SerializeField]
         private SpriteRedFlasher rightFoot;
 
+        private HighlightSpriteOnHover highlightLeftShoulder;
+        private HighlightSpriteOnHover highlightLeftArm;
+        private HighlightSpriteOnHover highlightLeftHand;
+        private HighlightSpriteOnHover highlightRightShoulder;
+        private HighlightSpriteOnHover highlightRightArm;
+        private HighlightSpriteOnHover highlightRightHand;
+
+        private HighlightSpriteOnHover highlightLeftKnee;
+        private HighlightSpriteOnHover highlightLeftFoot;
+        private HighlightSpriteOnHover highlightRightKnee;
+        private HighlightSpriteOnHover highlightRightFoot;
+
+        private void Awake()
+        {
+            highlightLeftShoulder = leftShoulder.GetComponent<HighlightSpriteOnHover>();
+            highlightLeftArm = leftArm.GetComponent<HighlightSpriteOnHover>();
+            highlightLeftHand = leftHand.GetComponent<HighlightSpriteOnHover>();
+            highlightRightShoulder = rightShoulder.GetComponent<HighlightSpriteOnHover>();
+            highlightRightArm = rightArm.GetComponent<HighlightSpriteOnHover>();
+            highlightRightHand = rightHand.GetComponent<HighlightSpriteOnHover>();
+
+            highlightLeftKnee = leftKnee.GetComponent<HighlightSpriteOnHover>();
+            highlightLeftFoot = leftFoot.GetComponent<HighlightSpriteOnHover>();
+            highlightRightKnee = rightKnee.GetComponent<HighlightSpriteOnHover>();
+            highlightRightFoot = rightFoot.GetComponent<HighlightSpriteOnHover>();
+        }
+
         public void SetFlashing(bool leftHand, bool rightHand, bool leftLeg, bool rightLeg)
         {
             leftShoulder.SetEnabled(leftHand);
@@ -42,6 +69,21 @@ namespace MudOverload.Game.Boss
 
             rightKnee.SetEnabled(rightLeg);
             rightFoot.SetEnabled(rightLeg);
+
+
+            highlightLeftShoulder.SetEnabled(leftHand);
+            highlightLeftArm.SetEnabled(leftHand);
+            highlightLeftHand.SetEnabled(leftHand);
+
+            highlightRightShoulder.SetEnabled(rightHand);
+            highlightRightArm.SetEnabled(rightHand);
+            highlightRightHand.SetEnabled(rightHand);
+
+            highlightLeftKnee.SetEnabled(leftLeg);
+            highlightLeftFoot.SetEnabled(leftLeg);
+
+            highlightRightKnee.SetEnabled(rightLeg);
+            highlightRightFoot.SetEnabled(rightLeg);
         }
 
         public void SetRandom(bool leftHand, bool rightHand, bool leftLeg, bool rightLeg)
@@ -64,7 +106,7 @@ namespace MudOverload.Game.Boss
                 choices.Add("rightLeg");
             }
 
-            if(choices.Count > 0)
+            if (choices.Count > 0)
             {
                 int choiceIndex = Random.Range(0, choices.Count);
                 var choice = choices[choiceIndex];
