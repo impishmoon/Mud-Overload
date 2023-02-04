@@ -809,6 +809,7 @@ GameObject:
   - component: {fileID: 800787312}
   - component: {fileID: 800787311}
   - component: {fileID: 800787315}
+  - component: {fileID: 800787316}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -951,6 +952,40 @@ MonoBehaviour:
   playerWidth: 0.55
   miningSpeed: 0.15
   maxHeldTiles: 3
+--- !u!114 &800787316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 800787310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b57b34235a174544ac9d262c1146ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSprites:
+  - {fileID: 21300000, guid: 418c69dc05ec29f4aad73d5f3c313362, type: 3}
+  - {fileID: 21300000, guid: fe39037c0a4384648bdfca674cd6fd34, type: 3}
+  - {fileID: 21300000, guid: 46896baa0e4e42446be8002d8df2a73c, type: 3}
+  - {fileID: 21300000, guid: f371cdbc4dc835b4f8bbe3e6ab9995f4, type: 3}
+  - {fileID: 21300000, guid: 3a0629a550f42d2449e11d1c9e14208b, type: 3}
+  - {fileID: 21300000, guid: 93c65f642fd75c947a4c906a1eb59b10, type: 3}
+  - {fileID: 21300000, guid: 37ddc60bc58272a4aaa86332174d8e58, type: 3}
+  runningSprites:
+  - {fileID: 21300000, guid: dc242b305d607ec4b9325c77749e1fd5, type: 3}
+  - {fileID: 21300000, guid: ed4b7039815a8a34ea3281fd4e67ab26, type: 3}
+  - {fileID: 21300000, guid: 50696761db207554bb824280067cc336, type: 3}
+  - {fileID: 21300000, guid: 2fb250fa6d27f8b4aaa7d25dd62cad8b, type: 3}
+  - {fileID: 21300000, guid: e23d8d61b4c3bce4da48fe08a354d27f, type: 3}
+  - {fileID: 21300000, guid: 93ab6b9afafe5d248a27a7a609226e5c, type: 3}
+  - {fileID: 21300000, guid: 12e44a3b464e9234191d01e11d3d5227, type: 3}
+  - {fileID: 21300000, guid: f622770d4aa437c4fbfbbd3dc1cecbee, type: 3}
+  miningSprites:
+  - {fileID: 21300000, guid: a4da4909ab8747d4fa7edefcb64fa34e, type: 3}
+  - {fileID: 21300000, guid: 7757505fa08ce844e8fc2d26372f35c3, type: 3}
+  - {fileID: 21300000, guid: cdc3f147d1220af46a392b77f27356fc, type: 3}
+  animationSpeed: 0.1
 --- !u!1 &818221737
 GameObject:
   m_ObjectHideFlags: 0
@@ -19246,7 +19281,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 851919781, guid: 446ae389dae10af40ab604bb05264929, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 106.26172
+      value: 110.65071
       objectReference: {fileID: 0}
     - target: {fileID: 851919781, guid: 446ae389dae10af40ab604bb05264929, type: 3}
       propertyPath: m_SizeDelta.y
