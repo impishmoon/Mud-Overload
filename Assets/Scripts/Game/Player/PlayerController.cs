@@ -1,4 +1,5 @@
 using MudOverload.UI;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -47,7 +48,7 @@ namespace MudOverload.Game.Player
 
         private float miningStart = 0f;
         private Vector2 miningPosition;
-        private int heldTiles = 0;
+        private List<string> heldTiles = new List<string>();
 
         private void Awake()
         {
@@ -58,6 +59,8 @@ namespace MudOverload.Game.Player
 
         private void Update()
         {
+            if (IsUIOpen.AreThereUIUsers()) return;
+
             #region Movement
             float horizontalVelocity = 0;
             bool jump = false;
@@ -89,10 +92,7 @@ namespace MudOverload.Game.Player
 
             isWalking = horizontalVelocity != 0;
 
-            if (!IsUIOpen.AreThereUIUsers())
-            {
-                rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
-            }
+            rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
             #endregion
 
             #region Mining
@@ -107,7 +107,24 @@ namespace MudOverload.Game.Player
 
                 MiningPreviewController.SetPosition(IsMining() ? miningPosition : finalMiningHitPoint);
 
-                if (Input.GetMouseButton(0) && !IsMining() && heldTiles < maxHeldTiles)
+                if (Input.GetMouseButtonDown(1))
+                {
+                    var position = miningHit.point + miningHit.normal * 0.5f;
+
+                    var tile = TerrainController.GetTile(position);
+
+                    if (heldTiles.Count > 0)
+                    {
+                        var lastHeldTile = heldTiles[heldTiles.Count - 1];
+
+                        TerrainController.SetTile(position, lastHeldTile);
+
+                        heldTiles.RemoveAt(heldTiles.Count - 1);
+                        PlayerHoldingTilesController.RemoveLastTile();
+                    }
+                }
+
+                if (Input.GetMouseButton(0) && !IsMining() && heldTiles.Count < maxHeldTiles)
                 {
                     miningStart = Time.time;
 
@@ -129,8 +146,8 @@ namespace MudOverload.Game.Player
                     if (progress >= 1)
                     {
                         StopMining();
-                        TerrainController.MineTile(miningPosition);
-                        heldTiles++;
+                        var tileName = TerrainController.MineTile(miningPosition);
+                        heldTiles.Add(tileName);
                     }
                 }
             }
@@ -146,7 +163,7 @@ namespace MudOverload.Game.Player
             var distance = Vector2.Distance(rigidbody.position, portalRegion);
             if (distance < 3)
             {
-                heldTiles = 0;
+                heldTiles.Clear();
                 PlayerHoldingTilesController.ClearTiles();
             }
             #endregion
@@ -173,6 +190,11 @@ namespace MudOverload.Game.Player
                         rigidbody.position += new Vector2(walkingRight ? 0.35f : -0.35f, 1f);
                     }
                 }
+            }
+
+            if(TerrainController.GetTile(rigidbody.position + new Vector2(0,-0.5f)) != null)
+            {
+                rigidbody.position += new Vector2(0, 1f);
             }
         }
 

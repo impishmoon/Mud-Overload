@@ -29,7 +29,7 @@ namespace MudOverload.UI
 
         private void Update()
         {
-            cGroup.alpha = Mathf.Lerp(cGroup.alpha, target, lerp);
+            cGroup.alpha = Mathf.Lerp(cGroup.alpha, target, lerp * Time.deltaTime);
             if (toggleBlockRaycasts)
             {
                 cGroup.blocksRaycasts = cGroup.alpha > 0.05f;
