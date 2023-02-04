@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace MudOverload.Game.Boss
 {
-	public class HighlightSpriteOnHover : MonoBehaviour
-	{
-		private static Dictionary<string, List<HighlightSpriteOnHover>> groups = new Dictionary<string, List<HighlightSpriteOnHover>>();
+    public class HighlightSpriteOnHover : MonoBehaviour
+    {
+        private static Dictionary<string, List<HighlightSpriteOnHover>> groups = new Dictionary<string, List<HighlightSpriteOnHover>>();
 
         [SerializeField]
         private string groupId;
@@ -13,18 +13,24 @@ namespace MudOverload.Game.Boss
         private Material material;
 
         private new SpriteRenderer renderer;
+        private SpriteRedFlasher redFlasher;
 
         private SpriteRenderer highlightRenderer;
+
+        private bool isMouseDown = false;
+        private float mouseDownTime = 0;
+        private float timeToDestroy = 1.5f;
 
         private void Awake()
         {
             renderer = GetComponent<SpriteRenderer>();
+            redFlasher = GetComponent<SpriteRedFlasher>();
         }
 
         private void OnEnable()
         {
             groups.TryGetValue(groupId, out var group);
-            if(group == null)
+            if (group == null)
             {
                 group = new List<HighlightSpriteOnHover>();
                 groups.Add(groupId, group);
@@ -40,9 +46,28 @@ namespace MudOverload.Game.Boss
                 foreach (var component in group)
                 {
                     component.Unhighlight();
+                    component.SetRedFlashRedOverride(0);
                 }
 
                 group.Remove(this);
+            }
+        }
+
+        private void Update()
+        {
+            if (isMouseDown)
+            {
+                var progress = Mathf.InverseLerp(mouseDownTime, mouseDownTime + timeToDestroy, Time.time);
+                SetRedFlashRedOverride(progress);
+
+                if (progress >= 1)
+                {
+                    print("dead");
+                }
+            }
+            else
+            {
+                SetRedFlashRedOverride(0);
             }
         }
 
@@ -53,7 +78,7 @@ namespace MudOverload.Game.Boss
 
         private void Highlight()
         {
-            if(highlightRenderer == null)
+            if (highlightRenderer == null)
             {
                 var highlightRendererObj = new GameObject();
                 highlightRendererObj.transform.parent = transform;
@@ -80,12 +105,24 @@ namespace MudOverload.Game.Boss
             }
         }
 
+        private void SetRedFlashRedOverride(float multiplier)
+        {
+            groups.TryGetValue(groupId, out var group);
+            if (group != null)
+            {
+                foreach (var component in group)
+                {
+                    component.redFlasher.redOverrideA = multiplier;
+                }
+            }
+        }
+
         private void OnMouseEnter()
         {
             groups.TryGetValue(groupId, out var group);
             if (group != null)
             {
-                foreach(var component in group)
+                foreach (var component in group)
                 {
                     component.Highlight();
                 }
@@ -94,6 +131,7 @@ namespace MudOverload.Game.Boss
 
         private void OnMouseExit()
         {
+            isMouseDown = false;
 
             groups.TryGetValue(groupId, out var group);
             if (group != null)
@@ -103,6 +141,29 @@ namespace MudOverload.Game.Boss
                     component.Unhighlight();
                 }
             }
+        }
+
+        private BossController.Limbs GroupIdToLimb()
+        {
+            if (groupId == "leftHand")
+            {
+                return BossController.Limbs.LEFT_HAND;
+            }
+            else if (groupId == "leftLeg")
+            {
+                return BossController.Limbs.LEFT_LEG;
+            }
+            else
+            {
+                return BossController.Limbs.RIGHT_LEG;
+            }
+        }
+
+        private void OnMouseDown()
+        {
+            if (!this.enabled) return;
+
+            BossController.KillLimb(GroupIdToLimb());
         }
     }
 }
