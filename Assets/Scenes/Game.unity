@@ -13066,10 +13066,13 @@ MonoBehaviour:
   spriteList:
   - name: dirt
     sprite: {fileID: 21300000, guid: f7c554e4550aa7e499d9a61efdb8c779, type: 3}
+    tile: {fileID: 11400000, guid: f8df1e1471bc41d419d7bd40ebb7deec, type: 2}
   - name: grass
     sprite: {fileID: 21300000, guid: ce786f3059723bc4581e52e3a80cf32a, type: 3}
+    tile: {fileID: 11400000, guid: b067ce1678c4a2b45b2f309d36e24491, type: 2}
   - name: stone
     sprite: {fileID: 21300000, guid: 3245b813c7cd94948a7671bda288a04f, type: 3}
+    tile: {fileID: 11400000, guid: 740e8067663adcc40b0f7dcda59c58a4, type: 2}
   tilemap: {fileID: 0}
 --- !u!66 &1192060444
 CompositeCollider2D:
@@ -18678,6 +18681,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 851919781, guid: 446ae389dae10af40ab604bb05264929, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443421285, guid: 446ae389dae10af40ab604bb05264929, type: 3}
+      propertyPath: target
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443421286, guid: 446ae389dae10af40ab604bb05264929, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443421286, guid: 446ae389dae10af40ab604bb05264929, type: 3}
+      propertyPath: m_BlocksRaycasts
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5642535974322197044, guid: 446ae389dae10af40ab604bb05264929, type: 3}

@@ -30,6 +30,20 @@ namespace MudOverload.Game.Player
             }
         }
 
+        public static void RemoveLastTile()
+        {
+            if (Singleton == null) return;
+
+            foreach (Transform child in Singleton.transform)
+            {
+                if (!child.gameObject.activeSelf) continue;
+                var index = child.GetSiblingIndex();
+                if (index != Singleton.transform.childCount - 1) continue;
+
+                Destroy(child.gameObject);
+            }
+        }
+
         [SerializeField]
         private float randomPositionSize = 1f;
 
