@@ -648,7 +648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b52d5ebf623be4a40a77199f728f1bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: 1
+  target: 0
   lerp: 10
   toggleBlockRaycasts: 0
   setToZeroThreshold: 0
@@ -660,7 +660,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568641324}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
