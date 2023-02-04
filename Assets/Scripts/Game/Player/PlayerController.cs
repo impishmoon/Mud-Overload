@@ -1,3 +1,4 @@
+using MudOverload.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -88,7 +89,10 @@ namespace MudOverload.Game.Player
 
             isWalking = horizontalVelocity != 0;
 
-            rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
+            if (!IsUIOpen.AreThereUIUsers())
+            {
+                rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
+            }
             #endregion
 
             #region Mining

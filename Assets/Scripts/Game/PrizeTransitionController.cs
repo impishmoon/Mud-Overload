@@ -57,8 +57,6 @@ namespace MudOverload.Game
         {
             if (animationStart == 0) return;
 
-            print(transitionToNextLevelAtEnd);
-
             if (transitionToNextLevelAtEnd)
             {
                 transform.position = Vector2.Lerp(transform.position, CameraController.GetCamera().ScreenToWorldPoint(new Vector2(Screen.width / 2, Screen.height / 2)), animationSpeed * Time.deltaTime);
@@ -67,7 +65,7 @@ namespace MudOverload.Game
                 if (Mathf.Abs(transform.localScale.x - MaxSize) < 1)
                 {
                     FadeOutAnimation = true;
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
                 }
             }
             else

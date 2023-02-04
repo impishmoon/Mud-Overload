@@ -12,6 +12,7 @@ namespace MudOverload.UI
             if (Singleton == null) return;
 
             Singleton.lcg.target = 1;
+            IsUIOpen.AddUser("death");
         }
 
 		private LerpCanvasGroup lcg;
@@ -21,6 +22,11 @@ namespace MudOverload.UI
             Singleton = this;
 
             lcg = GetComponent<LerpCanvasGroup>();
+        }
+
+        private void OnDestroy()
+        {
+            IsUIOpen.RemoveUser("death");
         }
 
         public void TryAgain()
