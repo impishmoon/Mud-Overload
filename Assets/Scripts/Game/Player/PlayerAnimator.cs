@@ -34,10 +34,8 @@ namespace MudOverload.Game.Player
 
         private void Update()
         {
-            var diff = lastPosition - rb.position;
+            var diff = rb.velocity;
             var hspeed = diff.x;
-
-            print(diff);
 
             if (isMining)
             {
