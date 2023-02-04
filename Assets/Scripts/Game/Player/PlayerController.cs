@@ -40,6 +40,8 @@ namespace MudOverload.Game.Player
         [SerializeField]
         private int maxHeldTiles = 1;
 
+        private PlayerAnimator animator;
+
         private new Rigidbody2D rigidbody;
 
         private bool onGround = false;
@@ -55,6 +57,7 @@ namespace MudOverload.Game.Player
             Singleton = this;
 
             rigidbody = GetComponent<Rigidbody2D>();
+            animator = GetComponent<PlayerAnimator>();
         }
 
         private void Update()
@@ -127,6 +130,7 @@ namespace MudOverload.Game.Player
                 if (Input.GetMouseButton(0) && !IsMining() && heldTiles.Count < maxHeldTiles)
                 {
                     miningStart = Time.time;
+                    animator.isMining = true;
 
                     miningPosition = finalMiningHitPoint;
 
@@ -211,6 +215,8 @@ namespace MudOverload.Game.Player
             miningStart = 0f;
 
             MiningController.StopMining();
+
+            animator.isMining = false;
         }
 
         private bool IsMining()

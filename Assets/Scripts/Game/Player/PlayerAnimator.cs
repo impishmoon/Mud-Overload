@@ -22,9 +22,7 @@ namespace MudOverload.Game.Player
         [SerializeField]
         private float animationSpeed = 0.1f;
 
-        private Vector2 lastPosition;
-
-        private bool isMining = false;
+        public bool isMining = false;
 
         private void Awake()
         {
@@ -50,6 +48,8 @@ namespace MudOverload.Game.Player
                 ResetFrameIndexIfNeeded();
 
                 if (Time.time > lastChangeFrame + animationSpeed) AdvanceFrameIndex(runningSprites);
+
+                renderer.flipX = hspeed < 0;
             }
             else
             {
@@ -59,7 +59,6 @@ namespace MudOverload.Game.Player
                 if (Time.time > lastChangeFrame + animationSpeed) AdvanceFrameIndex(idleSprites);
             }
 
-            lastPosition = rb.position;
             lastAnimationIndex = animationIndex;
         }
 
