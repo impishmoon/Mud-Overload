@@ -59,6 +59,8 @@ namespace MudOverload.Game.Player
 
         private void Update()
         {
+            if (IsUIOpen.AreThereUIUsers()) return;
+
             #region Movement
             float horizontalVelocity = 0;
             bool jump = false;
@@ -90,10 +92,7 @@ namespace MudOverload.Game.Player
 
             isWalking = horizontalVelocity != 0;
 
-            if (!IsUIOpen.AreThereUIUsers())
-            {
-                rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
-            }
+            rigidbody.velocity = new Vector2(horizontalVelocity * Time.fixedDeltaTime, jump ? jumpingForce * Time.fixedDeltaTime : rigidbody.velocity.y);
             #endregion
 
             #region Mining
