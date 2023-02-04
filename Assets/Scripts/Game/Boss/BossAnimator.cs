@@ -1,6 +1,9 @@
+using MudOverload.Game.Player;
+using MudOverload.UI;
 using UnityEngine;
 
-namespace MudOverload.Game.Boss {
+namespace MudOverload.Game.Boss
+{
     public class BossAnimator : MonoBehaviour
     {
         [Header("Others")]
@@ -90,6 +93,10 @@ namespace MudOverload.Game.Boss {
 
         private void Update()
         {
+            var hasLeftHand = BossController.HasLimb(BossController.Limbs.LEFT_HAND);
+            var hasLeftLeg = BossController.HasLimb(BossController.Limbs.LEFT_LEG);
+            var hasRightLeg = BossController.HasLimb(BossController.Limbs.RIGHT_LEG);
+
             //calculating movement speed
             var positionDifference = (Vector2)transform.position - lastPosition;
 
@@ -109,10 +116,16 @@ namespace MudOverload.Game.Boss {
             head.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(head.localEulerAngles.z, sleep * (headRenderer.flipX ? 45 : -45), animationLerpSpeed * Time.deltaTime));
 
             //moving knees and legs when we are moving
-            rightKnee.localEulerAngles = new Vector3(0, 0, Mathf.Sin(Time.time * animationSpeed) * 45 * displaySpeed * movementSpeed);
-            rightFoot.rotation = Quaternion.identity;
-            leftKnee.localEulerAngles = new Vector3(0, 0, Mathf.Cos(Time.time * animationSpeed) * 45 * displaySpeed * movementSpeed);
-            leftFoot.rotation = Quaternion.identity;
+            if (hasRightLeg)
+            {
+                rightKnee.localEulerAngles = new Vector3(0, 0, Mathf.Sin(Time.time * animationSpeed) * 45 * displaySpeed * movementSpeed);
+                rightFoot.rotation = Quaternion.identity;
+            }
+            if (hasLeftLeg)
+            {
+                leftKnee.localEulerAngles = new Vector3(0, 0, Mathf.Cos(Time.time * animationSpeed) * 45 * displaySpeed * movementSpeed);
+                leftFoot.rotation = Quaternion.identity;
+            }
 
             //storing lastPosition for figuring out movement speed later on
             lastPosition = transform.position;
@@ -135,12 +148,19 @@ namespace MudOverload.Game.Boss {
                     rightHand.localPosition = Vector3.Lerp(rightHand.localPosition, rightArm.InverseTransformPoint(firingTarget), animationLerpSpeed * Time.deltaTime);
                     rightArm.localPosition = Vector3.Lerp(rightHand.localPosition, rightShoulder.InverseTransformPoint(((Vector2)rightShoulder.position + firingTarget) / 2), animationLerpSpeed * Time.deltaTime);
 
-                    if(Vector2.Distance(rightHand.position, firingTarget) < 0.25 && !punchHitGround)
+                    if (Vector2.Distance(rightHand.position, firingTarget) < 0.25 && !punchHitGround)
                     {
                         punchHitGround = true;
 
                         var effect = Instantiate(groundHitEffect);
                         effect.transform.position = firingTarget;
+
+                        var playerPosition = PlayerController.GetPosition();
+
+                        if(Vector2.Distance(firingTarget, playerPosition) < 2.5f)
+                        {
+                            DeathUIController.ShowMenu();
+                        }
                     }
                 }
                 else
@@ -160,6 +180,43 @@ namespace MudOverload.Game.Boss {
         {
             rightHand.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.07000017f, -1.28f), animationLerpSpeed * Time.deltaTime);
             rightArm.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.02999997f, -1.48f), animationLerpSpeed * Time.deltaTime);
+        }
+
+        public void DestroyLimb(BossController.Limbs limb)
+        {
+            var rbf = 100;
+
+            if (limb == BossController.Limbs.LEFT_HAND)
+            {
+                var rb = leftShoulder.gameObject.AddComponent<Rigidbody2D>();
+                if (rb)
+                {
+                    rb.AddForce(new Vector3(Random.Range(-rbf, rbf), Random.Range(-rbf, rbf), Random.Range(-rbf, rbf)));
+                    leftShoulder.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                    leftArm.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                    leftHand.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                }
+            }
+            else if (limb == BossController.Limbs.LEFT_LEG)
+            {
+                var rb = leftKnee.gameObject.AddComponent<Rigidbody2D>();
+                if (rb)
+                {
+                    rb.AddForce(new Vector3(Random.Range(-rbf, rbf), Random.Range(-rbf, rbf), Random.Range(-rbf, rbf)));
+                    leftKnee.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                    leftFoot.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                }
+            }
+            else if (limb == BossController.Limbs.RIGHT_LEG)
+            {
+                var rb = rightKnee.gameObject.AddComponent<Rigidbody2D>();
+                if (rb)
+                {
+                    rb.AddForce(new Vector3(Random.Range(-rbf, rbf), Random.Range(-rbf, rbf), Random.Range(-rbf, rbf)));
+                    rightKnee.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                    rightFoot.gameObject.GetComponent<Collider2D>().isTrigger = false;
+                }
+            }
         }
     }
 }

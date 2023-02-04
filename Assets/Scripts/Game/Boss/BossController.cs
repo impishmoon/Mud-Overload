@@ -5,8 +5,67 @@ namespace MudOverload.Game.Boss
 {
     public class BossController : MonoBehaviour
     {
+        private static BossController Singleton;
+
+        public enum Limbs
+        {
+            LEFT_HAND,
+            LEFT_LEG,
+            RIGHT_LEG,
+        }
+
+        public static void KillLimb(Limbs limb)
+        {
+            if (Singleton == null) return;
+
+            if (limb == Limbs.LEFT_HAND)
+            {
+                Singleton.hasLeftHand = false;
+            }
+            else if (limb == Limbs.LEFT_LEG)
+            {
+                Singleton.hasLeftLeg = false;
+            }
+            else if (limb == Limbs.RIGHT_LEG)
+            {
+                Singleton.hasRightLeg = false;
+            }
+
+            Singleton.animator.DestroyLimb(limb);
+            Singleton.nextAttackStageChange = Time.time;
+
+            if (!Singleton.hasLeftHand && !Singleton.hasLeftLeg && !Singleton.hasRightLeg)
+            {
+                Singleton.isDead = true;
+                print("dead");
+                //TODO: trigger victory;
+            }
+        }
+
+        public static bool HasLimb(Limbs limb)
+        {
+            if (Singleton == null) return false;
+
+            if (limb == Limbs.LEFT_LEG)
+            {
+                return Singleton.hasLeftLeg;
+            }
+            else if (limb == Limbs.LEFT_HAND)
+            {
+                return Singleton.hasLeftHand;
+            }
+            else if (limb == Limbs.RIGHT_LEG)
+            {
+                return Singleton.hasRightLeg;
+            }
+
+            return false;
+        }
+
         [SerializeField]
         private LayerMask onlyTiles;
+        [SerializeField]
+        private float aimSpeed = 6;
 
         [SerializeField]
         private BossBatteryBarController batteryBar1;
@@ -22,12 +81,18 @@ namespace MudOverload.Game.Boss
         private BossAnimator.FiringStage attackStage = BossAnimator.FiringStage.NONE;
         private float nextAttackStageChange;
 
+        private Vector2 lerpedAttackPosition;
+
         private bool hasLeftHand = true;
         private bool hasLeftLeg = true;
         private bool hasRightLeg = true;
 
+        private bool isDead = false;
+
         private void Awake()
         {
+            Singleton = this;
+
             animator = GetComponent<BossAnimator>();
             flashingSpritesManager = GetComponent<FlashingSpritesManager>();
 
@@ -40,50 +105,65 @@ namespace MudOverload.Game.Boss
 
             if (Time.time > nextAttackStageChange)
             {
-                if (attackStage == BossAnimator.FiringStage.NONE)
+                if (!isDead)
                 {
-                    if (attackCounter < 3)
+                    if (attackStage == BossAnimator.FiringStage.NONE)
                     {
-                        attackCounter++;
-                        UpdateBatteryDisplay();
+                        if (attackCounter < 3)
+                        {
+                            attackCounter++;
+                            UpdateBatteryDisplay();
 
-                        nextAttackStageChange = Time.time + 1.25f;
+                            nextAttackStageChange = Time.time + 1.25f;
+                        }
+                        else
+                        {
+                            flashingSpritesManager.SetFlashing(false, false, false, false);
+
+                            lerpedAttackPosition = playerTarget.point;
+
+                            nextAttackStageChange = Time.time + 3;
+                            SetAttackStage(BossAnimator.FiringStage.AIMING);
+                        }
                     }
-                    else
+                    else if (attackStage == BossAnimator.FiringStage.AIMING)
                     {
-                        flashingSpritesManager.SetFlashing(false, false, false, false);
+                        nextAttackStageChange = Time.time + 0.5f + Vector2.Distance(transform.position, playerTarget.point) / 50f;
+                        SetAttackStage(BossAnimator.FiringStage.SHOOTING);
 
-                        animator.firingTarget = playerTarget.point;
+                        attackCounter--;
+                        UpdateBatteryDisplay();
+                    }
+                    else if (attackStage == BossAnimator.FiringStage.SHOOTING)
+                    {
+                        if (attackCounter == 0)
+                        {
+                            flashingSpritesManager.SetRandom(hasLeftHand, false, hasLeftLeg, hasRightLeg);
 
-                        nextAttackStageChange = Time.time + 3;
-                        SetAttackStage(BossAnimator.FiringStage.AIMING);
+                            nextAttackStageChange = Time.time + 3f;
+                            SetAttackStage(BossAnimator.FiringStage.NONE);
+                        }
+                        else
+                        {
+                            animator.firingTarget = playerTarget.point;
+
+                            nextAttackStageChange = Time.time + 1.5f;
+                            SetAttackStage(BossAnimator.FiringStage.AIMING);
+                        }
                     }
                 }
-                else if (attackStage == BossAnimator.FiringStage.AIMING)
+                else
                 {
-                    nextAttackStageChange = Time.time + 0.5f + Vector2.Distance(transform.position, playerTarget.point) / 50f;
-                    SetAttackStage(BossAnimator.FiringStage.SHOOTING);
-
-                    attackCounter--;
+                    attackCounter = 0;
                     UpdateBatteryDisplay();
                 }
-                else if (attackStage == BossAnimator.FiringStage.SHOOTING)
-                {
-                    if (attackCounter == 0)
-                    {
-                        flashingSpritesManager.SetRandom(hasLeftHand, false, hasLeftLeg, hasRightLeg);
+            }
 
-                        nextAttackStageChange = Time.time + 3f;
-                        SetAttackStage(BossAnimator.FiringStage.NONE);
-                    }
-                    else
-                    {
-                        animator.firingTarget = playerTarget.point;
+            if(attackStage == BossAnimator.FiringStage.AIMING)
+            {
+                lerpedAttackPosition = Vector2.MoveTowards(lerpedAttackPosition, playerTarget.point, aimSpeed * Time.deltaTime);
 
-                        nextAttackStageChange = Time.time + 1.5f;
-                        SetAttackStage(BossAnimator.FiringStage.AIMING);
-                    }
-                }
+                animator.firingTarget = lerpedAttackPosition;
             }
         }
 
