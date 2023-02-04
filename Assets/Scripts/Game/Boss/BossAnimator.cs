@@ -1,7 +1,6 @@
 using UnityEngine;
 
-namespace MudOverload.Game.Boos
-{
+namespace MudOverload.Game.Boss {
     public class BossAnimator : MonoBehaviour
     {
         [Header("Others")]
@@ -13,6 +12,8 @@ namespace MudOverload.Game.Boos
         private float movementSpeed = 5f;
         [SerializeField]
         private float displaySpeedLerp = 10;
+        [SerializeField]
+        private GameObject groundHitEffect;
 
         #region Inputs
         [Header("Inputs")]
@@ -59,17 +60,23 @@ namespace MudOverload.Game.Boos
 
         private float displaySpeed = 0;
 
-        private float sleep = 0;
+        [HideInInspector]
+        public float sleep = 0;
+
+        [HideInInspector]
+        private bool punchHitGround;
 
         //Firing animation data
-        private enum FiringStage
+        public enum FiringStage
         {
             NONE,
             AIMING,
             SHOOTING,
         }
-        private FiringStage firingStage = FiringStage.NONE;
-        private Vector2 firingTarget = new Vector2(7.5f, -5);
+        [HideInInspector]
+        public FiringStage firingStage = FiringStage.NONE;
+        [HideInInspector]
+        public Vector2 firingTarget = new Vector2(7.5f, -5);
 
         private void Awake()
         {
@@ -84,7 +91,6 @@ namespace MudOverload.Game.Boos
         private void Update()
         {
             //calculating movement speed
-            transform.position = new Vector3(Mathf.Sin(Time.time) * (10f * (1 - sleep)), 0, 0);
             var positionDifference = (Vector2)transform.position - lastPosition;
 
             //lerping display movement speed to prevent jitterness
@@ -117,8 +123,7 @@ namespace MudOverload.Game.Boos
                 rightArm.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(rightArm.localEulerAngles.z, 0, animationLerpSpeed * Time.deltaTime));
                 rightHand.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(rightHand.localEulerAngles.z, 0, animationLerpSpeed * Time.deltaTime));
 
-                rightHand.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.07000017f, -1.28f), animationLerpSpeed * Time.deltaTime);
-                rightArm.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.02999997f, -1.48f), animationLerpSpeed * Time.deltaTime);
+                ResetPunchHand();
             }
             else
             {
@@ -129,6 +134,19 @@ namespace MudOverload.Game.Boos
                 {
                     rightHand.localPosition = Vector3.Lerp(rightHand.localPosition, rightArm.InverseTransformPoint(firingTarget), animationLerpSpeed * Time.deltaTime);
                     rightArm.localPosition = Vector3.Lerp(rightHand.localPosition, rightShoulder.InverseTransformPoint(((Vector2)rightShoulder.position + firingTarget) / 2), animationLerpSpeed * Time.deltaTime);
+
+                    if(Vector2.Distance(rightHand.position, firingTarget) < 0.25 && !punchHitGround)
+                    {
+                        punchHitGround = true;
+
+                        var effect = Instantiate(groundHitEffect);
+                        effect.transform.position = firingTarget;
+                    }
+                }
+                else
+                {
+                    ResetPunchHand();
+                    punchHitGround = false;
                 }
             }
 
@@ -138,12 +156,10 @@ namespace MudOverload.Game.Boos
             });
         }
 
-        private void ResetAll()
+        private void ResetPunchHand()
         {
-            foreach (var keeper in keepers)
-            {
-                keeper.Reset();
-            }
+            rightHand.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.07000017f, -1.28f), animationLerpSpeed * Time.deltaTime);
+            rightArm.localPosition = Vector3.Lerp(rightHand.localPosition, new Vector3(0.02999997f, -1.48f), animationLerpSpeed * Time.deltaTime);
         }
     }
 }

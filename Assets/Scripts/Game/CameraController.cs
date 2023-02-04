@@ -1,5 +1,6 @@
 using MudOverload.Game.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MudOverload.Game
 {
@@ -30,6 +31,7 @@ namespace MudOverload.Game
 
         private void Update()
         {
+            if (SceneManager.GetActiveScene().buildIndex != 0) return;
             transform.position = Vector3.Lerp(transform.position, GetPosition(), cameraLerpSpeed * Time.deltaTime);
         }
 
